@@ -24,7 +24,7 @@ rf.fit(x_scaled, y.values.ravel())
 @app.route('/get_recommendation', methods=['POST'])
 def get_recommendation():
     data = request.get_json()
-    input_data = np.array([[data['glucose'], data['blood_Pressure'], data['insulin'], data['bmi'], data['age']]])
+    input_data = np.array([[data['glucose'], data['blood_pressure'], data['insulin'], data['bmi'], data['age']]])
     input_scaled = sc.transform(input_data)
     prediction = rf.predict(input_scaled)
     diabetes_level = l.inverse_transform(prediction.astype(int))[0]
