@@ -34,9 +34,8 @@ def get_recommendation():
         'diabetes_level': diabetes_level,
         'food_recommendation': food_recommendation.tolist()
     })
-
 if __name__ == '__main__':
-    import os
-
-    port = int(os.environ.get("PORT", 5000))
+    from os import environ
+    port = int(environ.get("PORT", 5000))  # Render sets this dynamically
     app.run(host='0.0.0.0', port=port)
+
