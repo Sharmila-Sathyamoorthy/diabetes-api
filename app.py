@@ -5,12 +5,11 @@ from flask_cors import CORS
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 
-# Initialize the Flask application
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-# Load and prepare your data
-df = pd.read_excel("updated_diabetes_food_recommendation.xlsx")  # Update the file path if necessary
+# Load and prepare the CSV data
+df = pd.read_csv("data.csv")
 x = df[['Glucose', 'BloodPressure', 'Insulin', 'BMI', 'Age']]
 y = df[['Diabetes Level']]
 l = LabelEncoder()
@@ -20,35 +19,21 @@ x_scaled = sc.fit_transform(x)
 
 # Train the model
 rf = RandomForestRegressor(n_estimators=100, random_state=2)
-rf.fit(x_scaled, y)
+rf.fit(x_scaled, y.values.ravel())
 
 @app.route('/get_recommendation', methods=['POST'])
 def get_recommendation():
-    data = request.get_json()  # Expecting JSON data in the request
-    glucose = data['glucose']
-    blood_pressure = data['bloodPressure']
-    insulin = data['insulin']
-    bmi = data['bmi']
-    age = data['age']
-    
-    # Prepare input for prediction
-    input_data = np.array([[glucose, blood_pressure, insulin, bmi, age]])
+    data = request.get_json()
+    input_data = np.array([[data['glucose'], data['bloodPressure'], data['insulin'], data['bmi'], data['age']]])
     input_scaled = sc.transform(input_data)
-
-    # Predict diabetes level
     prediction = rf.predict(input_scaled)
     diabetes_level = l.inverse_transform(prediction.astype(int))[0]
-
-    # Get food recommendation based on diabetes level
     food_recommendation = df.loc[df['Diabetes Level'] == diabetes_level, 'Food Recommendation'].values
 
-    # Prepare response
-    response = {
+    return jsonify({
         'diabetes_level': diabetes_level,
-        'food_recommendation': food_recommendation.tolist()  # Convert to list if necessary
-    }
-
-    return jsonify(response)  # Return the response in JSON format
+        'food_recommendation': food_recommendation.tolist()
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
