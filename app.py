@@ -10,7 +10,7 @@ CORS(app)
 
 # Load and prepare the CSV data
 df = pd.read_csv("data.csv")
-x = df[['Glucose', 'BloodPressure', 'Insulin', 'BMI', 'Age']]
+x = df[['Glucose', 'Blood_Pressure', 'Insulin', 'BMI', 'Age']]
 y = df[['Diabetes Level']]
 l = LabelEncoder()
 y['Diabetes Level'] = l.fit_transform(y['Diabetes Level'])
