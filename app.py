@@ -28,12 +28,14 @@ def get_recommendation():
     input_scaled = sc.transform(input_data)
     prediction = rf.predict(input_scaled)
     diabetes_level = l.inverse_transform(prediction.astype(int))[0]
-    food_recommendation = df.loc[df['Diabetes Level'] == diabetes_level, 'Food Recommendation'].values
+
+    food_recommendation = df.loc[df['Diabetes Level'] == diabetes_level, 'Food Recommendation'].unique()
 
     return jsonify({
         'diabetes_level': diabetes_level,
         'food_recommendation': food_recommendation.tolist()
     })
+
 if __name__ == '__main__':
     from os import environ
     port = int(environ.get("PORT", 5000))  # Render sets this dynamically
